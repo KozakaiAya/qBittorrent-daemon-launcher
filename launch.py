@@ -39,14 +39,14 @@ def main():
         # Detect QB GUI version first
         proc = subprocess.Popen(['which', 'qbittorrent'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         outs, errs = proc.communicate()
-        QB_GUI_BIN = outs.decode(sys.stdout.encoding)
+        QB_GUI_BIN = outs.decode(sys.stdout.encoding).rstrip('\n')
         if len(QB_GUI_BIN) > 0:
             QB_BIN = QB_GUI_BIN
     if QB_BIN is None:
         # Detect QB-nox
         proc = subprocess.Popen(['which', 'qbittorrent-nox'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         outs, errs = proc.communicate()
-        QB_NOX_BIN = outs.decode(sys.stdout.encoding)
+        QB_NOX_BIN = outs.decode(sys.stdout.encoding).rstrip('\n')
         if len(QB_NOX_BIN) > 0:
             QB_BIN = QB_NOX_BIN
     if QB_BIN is None:
@@ -91,4 +91,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
