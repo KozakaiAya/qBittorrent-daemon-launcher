@@ -4,6 +4,8 @@ import threading
 import os
 import argparse
 import time
+import pathlib
+import contextlib
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--threshold', type=float, default=0.75)
@@ -31,6 +33,13 @@ def get_memory_usage(pid):
             status.close()
     return result
 
+# Avoid 'ICE default IO error handler doing an exit()' error
+def deleteICEauthority():
+    home_dir = str(pathlib.Path.home())
+    ICE_path = os.path.join(home_dir, '.ICEauthority')
+    with contextlib.suppress(FileNotFoundError):
+        os.remove(ICE_path)
+
 def main():
     # Detect qBittorrent is installed
     have_X = X_is_running()
@@ -42,6 +51,8 @@ def main():
         QB_GUI_BIN = outs.decode(sys.stdout.encoding).rstrip('\n')
         if len(QB_GUI_BIN) > 0:
             QB_BIN = QB_GUI_BIN
+            # Need delete the ~/.ICEauthority
+            deleteICEauthority()
     if QB_BIN is None:
         # Detect QB-nox
         proc = subprocess.Popen(['which', 'qbittorrent-nox'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -82,6 +93,8 @@ def main():
         else:
             print("Fuck libtorrent: Exit Code =", ret)
             time.sleep(5)
+            if have_X:
+                deleteICEauthority()
             print("Restarting qBittorrent...")
             qb_proc = subprocess.Popen([QB_BIN], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             qb_pid = qb_proc.pid
