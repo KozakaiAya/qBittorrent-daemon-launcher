@@ -30,3 +30,7 @@ def deleteICEauthority():
     ICE_path = os.path.join(home_dir, '.ICEauthority')
     with contextlib.suppress(FileNotFoundError):
         os.remove(ICE_path)
+
+def safe_mkdir(path):
+    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+    

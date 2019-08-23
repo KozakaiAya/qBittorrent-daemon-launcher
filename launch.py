@@ -8,6 +8,7 @@ import pathlib
 import contextlib
 
 from utils import X_is_running, get_memory_usage, deleteICEauthority
+from logger import Logger
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--threshold', type=float, default=0.75)
@@ -15,6 +16,7 @@ parser.add_argument('--poll_interval', type=int, default=60)
 args = parser.parse_args()
 
 def main():
+    logger_obj = Logger()
     # Detect qBittorrent is installed
     have_X = X_is_running()
     QB_BIN = None
@@ -55,6 +57,8 @@ def main():
             if cur_mem_usage > (mem_kib * args.threshold):
                 # Memory Leak
                 print("Fuck libtorrent: Memory Leak")
+                outs, err = qb_proc.communicate()
+                logger_obj.log(outs)
                 qb_proc.kill()
                 print("Current qBittorrent killed, wait 5 seconds before restart...")
                 time.sleep(5)
@@ -66,6 +70,8 @@ def main():
             sys.exit(0)
         else:
             print("Fuck libtorrent: Exit Code =", ret)
+            outs, err = qb_proc.communicate()
+            logger_obj.log(outs)
             time.sleep(5)
             if have_X:
                 deleteICEauthority()
