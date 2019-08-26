@@ -12,6 +12,6 @@ class Logger():
         utils.safe_mkdir(path)
         fn = os.path.join(path, datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + '.log')
         with open(fn, 'w') as f:
-            f.write(content)
+            f.write(str(content))
         
 
