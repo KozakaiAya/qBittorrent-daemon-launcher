@@ -57,9 +57,9 @@ def main():
             if cur_mem_usage > (mem_kib * args.threshold):
                 # Memory Leak
                 print("Fuck libtorrent: Memory Leak")
+                qb_proc.kill()
                 outs, err = qb_proc.communicate()
                 logger_obj.log(outs)
-                qb_proc.kill()
                 print("Current qBittorrent killed, wait 5 seconds before restart...")
                 time.sleep(5)
                 print("Restarting qBittorrent...")
