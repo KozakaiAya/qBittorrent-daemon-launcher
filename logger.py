@@ -7,7 +7,7 @@ import utils
 class Logger():
     def __init__(self):
         cur_path = sys.path[0]
-        utils.safe_mkdir(os.path.join(cur_path, 'log/')
+        utils.safe_mkdir(os.path.join(cur_path, 'log/'))
 
     def log(self, content):
         path = os.path.join(cur_path, 'log/', datetime.datetime.now().strftime("%Y%m%d"))
