@@ -13,6 +13,7 @@ from logger import Logger
 parser = argparse.ArgumentParser()
 parser.add_argument('--threshold', type=float, default=0.75)
 parser.add_argument('--poll_interval', type=int, default=60)
+parser.add_argument('--config', type=str, default='')
 args = parser.parse_args()
 
 def main():
@@ -45,8 +46,14 @@ def main():
     mem_bytes = os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')
     mem_kib = mem_bytes / 1024.0
 
+    # Build qB bin start path
+    if args.config == '':
+        qb_exec_cmd = [QB_BIN]
+    else:
+        qb_exec_cmd = [QB_BIN, '--configuration=' + args.config]
+
     # Start qBittorrent
-    qb_proc = subprocess.Popen([QB_BIN], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    qb_proc = subprocess.Popen(qb_exec_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     qb_pid = qb_proc.pid
 
     while True:
@@ -63,7 +70,7 @@ def main():
                 print("Current qBittorrent killed, wait 5 seconds before restart...")
                 time.sleep(5)
                 print("Restarting qBittorrent...")
-                qb_proc = subprocess.Popen([QB_BIN], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                qb_proc = subprocess.Popen(qb_exec_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 qb_pid = qb_proc.pid
         elif ret == 0:
             print('qBittorrent normally exited...')
@@ -76,7 +83,7 @@ def main():
             if have_X:
                 deleteICEauthority()
             print("Restarting qBittorrent...")
-            qb_proc = subprocess.Popen([QB_BIN], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            qb_proc = subprocess.Popen(qb_exec_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             qb_pid = qb_proc.pid
 
         # Wait args.poll_interval seconds before next poll
